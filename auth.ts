@@ -1,16 +1,14 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { db } from "./lib/db";
-import authConfig from "./auth.config";
-import { getUserById } from "./modules/auth/actions";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+import authConfig from "./auth.config";
+import { db } from "./lib/db";
+import { getAccountByUserId, getUserById } from "./modules/auth/actions";
+
+export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
-    // @ts-ignore
-    async signIn({ user, account }) {
-      if (!user || !account) {
-        return false;
-      }
+    async signIn({ user, account, profile }) {
+      if (!user || !account) return false;
 
       const existingUser = await db.user.findUnique({
         where: { email: user.email! },
@@ -51,6 +49,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
           },
         });
+
         if (!existingAccount) {
           await db.account.create({
             data: {
@@ -69,18 +68,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
           });
         }
-        return true;
-      }
-    },
-    async jwt({ token }) {
-      if (!token.sub) {
-        return token;
       }
 
+      return true;
+    },
+
+    async jwt({ token, user, account }) {
+      if (!token.sub) return token;
       const existingUser = await getUserById(token.sub);
-      if (!existingUser) {
-        return token;
-      }
+
+      if (!existingUser) return token;
+
+      const exisitingAccount = await getAccountByUserId(existingUser.id);
 
       token.name = existingUser.name;
       token.email = existingUser.email;
@@ -88,10 +87,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return token;
     },
+
     async session({ session, token }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
+
       if (token.sub && session.user) {
         session.user.role = token.role;
       }
@@ -99,7 +100,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
+
   secret: process.env.AUTH_SECRET,
   adapter: PrismaAdapter(db),
+  session: { strategy: "jwt" },
   ...authConfig,
 });
