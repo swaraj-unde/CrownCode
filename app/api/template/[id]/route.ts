@@ -10,7 +10,7 @@ import { NextRequest } from "next/server";
 
 function validateJsonStructure(data: unknown): boolean {
   try {
-    JSON.parse(JSON.stringify(data)); 
+    JSON.parse(JSON.stringify(data));
     return true;
   } catch (error) {
     console.error("Invalid JSON structure:", error);

@@ -18,8 +18,6 @@ export default async function HomeLayout({
   return (
     <>
       <Header />
-
-
       <div
         className={cn(
           "absolute inset-0 -z-10",
@@ -28,8 +26,6 @@ export default async function HomeLayout({
           "dark:[background-image:linear-gradient(to_right,rgba(63,63,70,0.55)_1px,transparent_1px),linear-gradient(to_bottom,rgba(63,63,70,0.55)_1px,transparent_1px)]",
         )}
       />
-
-
       <div
         className="
           pointer-events-none absolute inset-0
@@ -38,9 +34,7 @@ export default async function HomeLayout({
           -z-10
         "
       />
-
       <main className="relative z-20 w-full">{children}</main>
-
       <Footer />
     </>
   );
