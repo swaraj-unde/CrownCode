@@ -1,11 +1,12 @@
-import { useCallback, useState } from "react";
-import { TemplateFolder } from "../lib/path-to-json";
-import { getPlaygroundById } from "../actions";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+
+import type { TemplateFolder } from "../lib/path-to-json";
+import { getPlaygroundById, saveUpdatedCode } from "../actions";
 
 interface PlaygroundData {
   id: string;
-  name?: string;
+  title?: string;
   [key: string]: any;
 }
 
@@ -28,22 +29,27 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
 
   const loadPlayground = useCallback(async () => {
     if (!id) return;
+
     try {
       setIsLoading(true);
       setError(null);
+
       const data = await getPlaygroundById(id);
-      //@ts-ignore
+
+      //   @ts-ignore
       setPlaygroundData(data);
       const rawContent = data?.templateFiles?.[0]?.content;
+
       if (typeof rawContent === "string") {
         const parsedContent = JSON.parse(rawContent);
         setTemplateData(parsedContent);
-        toast.success("Playground Loaded Successfully ");
+        toast.success("playground loaded successfully");
         return;
       }
+
       const res = await fetch(`/api/template/${id}`);
 
-      if (!res.ok) throw new Error(`Failed to load template : ${res.status}`);
+      if (!res.ok) throw new Error(`Failed to load template: ${res.status}`);
 
       const templateRes = await res.json();
 
@@ -69,4 +75,32 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
       setIsLoading(false);
     }
   }, [id]);
+
+  const saveTemplateData = useCallback(
+    async (data: TemplateFolder) => {
+      try {
+        await saveUpdatedCode(id, data);
+        setTemplateData(data);
+        toast.success("Changes saved successfully");
+      } catch (error) {
+        console.error("Error saving template data:", error);
+        toast.error("Failed to save changes");
+        throw error;
+      }
+    },
+    [id],
+  );
+
+  useEffect(() => {
+    loadPlayground();
+  }, [loadPlayground]);
+
+  return {
+    playgroundData,
+    templateData,
+    isLoading,
+    error,
+    loadPlayground,
+    saveTemplateData,
+  };
 };

@@ -3,7 +3,6 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/modules/auth/actions";
 import { revalidatePath } from "next/cache";
-import { dayPickerContext } from "react-day-picker";
 
 export const getAllPlaygroundForUser = async () => {
   const user = await currentUser();
@@ -71,6 +70,7 @@ export const deleteProjectById = async (id: string) => {
     return null;
   }
 };
+
 export const editProjectById = async (
   id: string,
   data: { title: string; description: string },
