@@ -43,7 +43,7 @@ export const PlaygroundEditor = ({
   const isAcceptingSuggestionRef = useRef(false);
   const suggestionAcceptedRef = useRef(false);
   const suggestionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const tabCommandRef = useRef<any>(null);
+  //const tabCommandRef = useRef<any>(null);
 
   const generateSuggestionId = () =>
     `suggestion-${Date.now()}-${Math.random()}`;
@@ -356,11 +356,11 @@ export const PlaygroundEditor = ({
       onTriggerSuggestion("completion", editor);
     });
 
-    if (tabCommandRef.current) {
-      tabCommandRef.current.dispose();
-    }
+    // if (tabCommandRef.current) {
+    //   tabCommandRef.current.dispose();
+    // }
 
-    tabCommandRef.current = editor.addCommand(
+    editor.addCommand(
       monaco.KeyCode.Tab,
       () => {
         console.log("TAB PRESSED", {
@@ -521,10 +521,10 @@ export const PlaygroundEditor = ({
         inlineCompletionProviderRef.current.dispose();
         inlineCompletionProviderRef.current = null;
       }
-      if (tabCommandRef.current) {
-        tabCommandRef.current.dispose();
-        tabCommandRef.current = null;
-      }
+      // if (tabCommandRef.current) {
+      //   tabCommandRef.current.dispose();
+      //   tabCommandRef.current = null;
+      // }
     };
   }, []);
 
@@ -538,7 +538,6 @@ export const PlaygroundEditor = ({
         </div>
       )}
 
-      {/* Active suggestion indicator */}
       {currentSuggestionRef.current && !suggestionLoading && (
         <div className="absolute top-2 right-2 z-10 bg-green-100 dark:bg-green-900 px-2 py-1 rounded text-xs text-green-700 dark:text-green-300 flex items-center gap-1">
           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
