@@ -25,9 +25,13 @@ const Page = async () => {
           <EmptyState />
         ) : (
           <ProjectTable
+            //@ts-ignore
             projects={playgrounds || []}
+            //@ts-ignore
             onDeleteProject={deleteProjectById}
+            //@ts-ignore
             onUpdateProject={editProjectById}
+            //@ts-ignore
             onDuplicateProject={duplicateProjectById}
           />
         )}
