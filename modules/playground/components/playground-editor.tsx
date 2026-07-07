@@ -1,13 +1,19 @@
 "use client";
 
 import { useRef, useEffect, useCallback } from "react";
-import Editor, { type Monaco } from "@monaco-editor/react";
+import Editor, { type Monaco, loader } from "@monaco-editor/react";
 import { TemplateFile } from "../lib/path-to-json";
 import {
   configureMonaco,
   defaultEditorOptions,
   getEditorLanguage,
 } from "../lib/editor-config";
+
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs",
+  },
+});
 
 interface PlaygroundEditorProps {
   activeFile: TemplateFile | undefined;
@@ -431,7 +437,6 @@ export const PlaygroundEditor = ({
           onRejectSuggestion(editor);
         }
       }
-
 
       if (!currentSuggestionRef.current && !suggestionLoading) {
         if (suggestionTimeoutRef.current) {
